@@ -30,7 +30,7 @@ class Dataset(tfds.core.GeneratorBasedBuilder):
         builder=self,
         description=_DESCRIPTION,
         features=tfds.features.FeaturesDict({
-            'image': tfds.features.Image(shape=(None, None, 3)),
+            'image': tfds.features.Image(shape=(40, 40, 3)),
             'label': tfds.features.ClassLabel(names=['malaria', 'no malaria']), # num_classes=2),
         }),
         supervised_keys=('image', 'label'),  # Set to `None` to disable
@@ -41,10 +41,12 @@ class Dataset(tfds.core.GeneratorBasedBuilder):
   def _split_generators(self, dl_manager: tfds.download.DownloadManager):
     """Returns SplitGenerators."""
     # This section
-    path = "dataset/dataset ML candidates/" # Set this manually
+    path = "dataset ML candidates/" # Set this manually inside dataset folder to avoid automation
+    if not tf.io.gfile.exists(path + 'training.csv'): self.ext = "../"
+    else: self.ext = ""
     return {
-        'train': self._generate_examples(data_path=path + 'training.csv'),
-        'test': self._generate_examples(data_path=path + 'validation.csv'),
+        'train': self._generate_examples(data_path=self.ext + path + 'training.csv'),
+        'test': self._generate_examples(data_path=self.ext + path + 'validation.csv'),
     }
 
   def _generate_examples(self, data_path):
@@ -53,6 +55,6 @@ class Dataset(tfds.core.GeneratorBasedBuilder):
       for row in csv.DictReader(f):
         image_id = int(row['']) # using idx as image_id - Also temporal
         yield image_id, {
-            'image': row['imgs'],
+            'image': self.ext +row['imgs'],
             'label': row['labels'],
         }

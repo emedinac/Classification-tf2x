@@ -17,6 +17,7 @@ class DataManager:
         all_labels = []
         for cls in all_cls:
             path = os.path.join(self.main_folder, cls)
+            # "../" was added to solve quickly the path problems
             set_imgs = [os.path.join(path,img) for img in os.listdir(path) if img.endswith("jpg")]
             all_images.extend(set_imgs)
             all_labels.extend([cls]*len(set_imgs))
