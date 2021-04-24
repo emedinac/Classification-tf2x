@@ -1,6 +1,8 @@
 import os
 import numpy as np
-
+import pandas as pd
+# This class generates the splits and create links to the folder without moving the original files or
+# create a copy of the current data.
 class DataManager:
     def __init__(self, main_folder="dataset ML candidates/", test_split=0.5, seed=0):
         self.main_folder = main_folder
@@ -10,11 +12,12 @@ class DataManager:
     def Generate_Splits(self):
         # Data is not separated by train and test, it is separated by classes 
         all_cls = os.listdir(self.main_folder)
+        all_cls = [a for a in all_cls if os.path.isdir(self.main_folder+a)]
         all_images = []
         all_labels = []
         for cls in all_cls:
-            path = self.main_folder + cls
-            set_imgs = [path+img for img in os.listdir(path) if img.endswith("jpg")]
+            path = os.path.join(self.main_folder, cls)
+            set_imgs = [os.path.join(path,img) for img in os.listdir(path) if img.endswith("jpg")]
             all_images.extend(set_imgs)
             all_labels.extend([cls]*len(set_imgs))
         all_images = np.array(all_images)
@@ -30,16 +33,12 @@ class DataManager:
         self.va_data = all_images[:self.test_split]
         self.va_label = all_labels[:self.test_split]
     def Save_Splits(self):
-        with open(self.main_folder+'/training_images.txt', 'w') as f:
-            for item in self.tr_data: f.write("%s\n" % item)
-        with open(self.main_folder+'/training_labels.txt', 'w') as f:
-            for item in self.tr_label: f.write("%s\n" % item)
+        # Pandas was included for a more efficient link data storage
+        data_train = pd.DataFrame({"imgs":self.tr_data, "labels":self.tr_label})
+        data_validation = pd.DataFrame({"imgs":self.va_data, "labels":self.va_label})
+        data_train.to_csv(self.main_folder+"training.csv")
+        data_validation.to_csv(self.main_folder+"validation.csv")
 
-
-        with open(self.main_folder+'/validation_images.txt', 'w') as f:
-            for item in self.va_data: f.write("%s\n" % item)
-        with open(self.main_folder+'/validation_labels.txt', 'w') as f:
-            for item in self.va_label: f.write("%s\n" % item)
     def Get_Splits(self):
         return self.tr_data, self.tr_label, self.va_data, self.va_label
 
