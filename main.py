@@ -44,8 +44,6 @@ for epoch in range(Epochs):
     storage.SaveScalar('test_accuracy',test_stage.test_accuracy.result() * 100)
     storage.UpdateEpoch()
     # Save the best model weights.
-    import pdb
-    pdb.set_trace()
     if test_stage.loss_updated:
         # model.save("test") # Init saver # Full graph
         model.save_weights("weights/{0}_{1}.pth".format(model.name, epoch))
