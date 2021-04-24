@@ -5,10 +5,20 @@ from tensorflow.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.keras import Model
 
 import dataset
+
+# Data augmentation here may increase the accuracy in the training results.
+def Augmentation(image):
+    image = tf.image.convert_image_dtype(image, tf.float32)
+    return image
+    tf.image.flip_left_right(image)
+    tf.image.random_contrast(image, lower=0.0, upper=1.0)
+
 # Load my dataset here
 # This functions were created in order to follow the full-pipeline format from TFDS-nightly.
-train_ds = tfds.load("dataset", split='train', shuffle_files=True)
-test_ds = tfds.load("dataset", split='test', shuffle_files=True)
+train_ds = tfds.load("dataset", split='train', shuffle_files=True, batch_size=32)
+test_ds = tfds.load("dataset", split='test', shuffle_files=True, batch_size=32)
+train_ds = train_ds.map(lambda data: (Augmentation(data["image"]), data["label"])).cache()
+test_ds = test_ds.map(lambda data: (Augmentation(data["image"]), data["label"])).cache()
 
 class MyModel(Model):
   def __init__(self):
@@ -38,6 +48,7 @@ train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy
 
 test_loss = tf.keras.metrics.Mean(name='test_loss')
 test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
+
 
 
 @tf.function
@@ -70,11 +81,11 @@ for epoch in range(EPOCHS):
     test_loss.reset_states()
     test_accuracy.reset_states()
 
-    for data in train_ds:
-        train_step(data["image"], data["label"])
+    for image, label in train_ds:
+        train_step(image, label)
 
-    for data in test_ds:
-        test_step(data["image"], data["label"])
+    for image, label in test_ds:
+        test_step(image, label)
 
     with test_summary_writer.as_default():
         tf.summary.scalar('train_loss',train_loss.result(),epoch)

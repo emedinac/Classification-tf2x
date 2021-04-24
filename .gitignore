@@ -1,6 +1,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 dataset ML candidates/
+logdir/
 *.py[cod]
 *$py.class
 
