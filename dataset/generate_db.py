@@ -47,3 +47,5 @@ if __name__ == '__main__':
     Manager = DataManager()
     Manager.Generate_Splits()
     Manager.Save_Splits()
+    os.system("tfds new dataset")
+    os.system("tfds build --overwrite --data_dir=../dataset ML candidates/")

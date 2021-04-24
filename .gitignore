@@ -2,6 +2,7 @@
 __pycache__/
 dataset ML candidates/
 logdir/
+weights/
 *.py[cod]
 *$py.class
 
