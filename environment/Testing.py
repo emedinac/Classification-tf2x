@@ -7,6 +7,7 @@ class TestModule:
         self.test_loss.reset_states()
         self.test_accuracy.reset_states()
         self.prev_best_loss = 10000.
+        self.loss_updated = False
     @tf.function
     def reset_states(self):
         self.test_loss.reset_states()
@@ -23,6 +24,9 @@ class TestModule:
     def Update_best_loss(self):
         # Comparison steps
         if self.test_loss.result()<self.prev_best_loss:
+            self.loss_updated = True
             self.prev_best_loss = self.test_loss.result().numpy()
+        else:
+            self.loss_updated = False
 if __name__ == '__main__':
     pass; # UnitTest modules

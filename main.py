@@ -21,7 +21,7 @@ test_stage.loss_function = Metrics.Losses.SetCrossEntropy()
 train_ds, test_ds = dataset.GetDB(name="dataset")
 
 # Model configuration
-
+# model = m.MyModel() # User-defined
 model = m.EfficientNetB0(classes=classes) # User-defined
 
 
@@ -44,7 +44,9 @@ for epoch in range(Epochs):
     storage.SaveScalar('test_accuracy',test_stage.test_accuracy.result() * 100)
     storage.UpdateEpoch()
     # Save the best model weights.
-    if test_stage.test_loss.result()<test_stage.prev_best_loss:
+    import pdb
+    pdb.set_trace()
+    if test_stage.loss_updated:
         # model.save("test") # Init saver # Full graph
         model.save_weights("weights/{0}_{1}.pth".format(model.name, epoch))
 
@@ -55,4 +57,4 @@ for epoch in range(Epochs):
     f'Test Loss: {test_stage.test_loss.result()}, '
     f'Test Accuracy: {test_stage.test_accuracy.result() * 100}, '
     )
-# Epoch 10, Loss: 0.4299190938472748, Accuracy: 88.12734985351562, Test Loss: 0.4228290617465973, Test Accuracy: 88.58039093017578
+# MyModel Epoch 10, Loss: 0.4299190938472748, Accuracy: 88.12734985351562, Test Loss: 0.4228290617465973, Test Accuracy: 88.58039093017578
